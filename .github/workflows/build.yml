@@ -1,0 +1,46 @@
+name: build
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: centos-stream-9
+            shortcut: cs9
+            container-name: el9stream
+          - name: centos-stream-10
+            shortcut: cs10
+            container-name: el10stream
+
+    name: ${{ matrix.name }}
+
+    env:
+      ARTIFACTS_DIR: exported-artifacts
+
+    container:
+      image: quay.io/ovirt/buildcontainer:${{ matrix.container-name }}
+
+    steps:
+    - name: Checkout sources
+      uses: ovirt/checkout-action@main
+
+    - name: Set up Java
+      run: |
+        dnf install -y java-21-openjdk-devel
+
+    - name: Perform build
+      run: |
+        .automation/build-rpm.sh $ARTIFACTS_DIR
+
+    - name: Upload artifacts
+      uses: ovirt/upload-rpms-action@main
+      with:
+        directory: ${{ env.ARTIFACTS_DIR}}

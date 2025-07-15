@@ -1,0 +1,39 @@
+Name:		ovirt-build-dependencies
+Version:	@VERSION@
+Release:	@RELEASE@%{?dist}
+Summary:	oVirt Build Dependencies
+Group:		%{ovirt_product_group}
+License:	ASL 2.0
+URL:		http://www.ovirt.org
+Source0:	%{name}-%{version}.tar.gz
+
+BuildArch:	noarch
+
+AutoReqProv:    0
+
+BuildRequires:	tar
+BuildRequires:	maven-openjdk21
+
+Requires:	javapackages-filesystem
+
+
+%description
+%{name} provides build dependencies for oVirt Java Projects, so it is possible to build it without internet access.
+
+
+%prep
+%setup -c -q -T
+
+
+%install
+install -d -m 755 %{buildroot}%{_datadir}/%{name}/repository
+tar -xf %{SOURCE0} -C %{buildroot}%{_datadir}/%{name}
+
+
+%files
+%{_datadir}/%{name}
+
+
+%changelog
+* Tue Jul 15 2025 Jean-Louis Dupond <jean-louis@dupond.be> - 4.5.7-1
+- Package dependencies for ovirt-engine-api-metamodel
