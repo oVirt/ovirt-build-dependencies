@@ -1,7 +1,5 @@
 # oVirt Build Dependencies
 
-[![Copr build status](https://copr.fedorainfracloud.org/coprs/ovirt/ovirt-master-snapshot/package/ovirt-build-dependencies/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/ovirt/ovirt-master-snapshot/package/ovirt-build-dependencies/)
-
 Welcome to the oVirt Build Dependencies source repository.
 This repository is hosted on [GitHub:ovirt-build-dependencies](https://github.com/mwperina/ovirt-build-dependencies)
 

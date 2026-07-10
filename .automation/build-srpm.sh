@@ -4,6 +4,14 @@
 # used to build maven cache
 PKG_VERSION="4.5.7"
 
+# RPM release field; default is 0.master for development builds.
+# Override via env: PACKAGE_RPM_RELEASE (e.g. set to 1 for a release build)
+PACKAGE_RPM_RELEASE="${PACKAGE_RPM_RELEASE:-0.master}"
+
+# Optional release suffix appended to the RPM Release field (e.g. .20250710120000.gitabc1234)
+# Set in CI for non-tagged builds; empty for tagged/release builds.
+RELEASE_SUFFIX="${RELEASE_SUFFIX:-}"
+
 # Either a branch name or a specific tag in ovirt-parent project for which
 # the maven cache is built
 ENGINE_VERSION="main"
@@ -39,10 +47,6 @@ cd ovirt-engine-api-metamodel
 # Mark current directory as safe for git to be able to execute git commands
 git config --global --add safe.directory $(pwd)
 
-# Prepare the release, which contain git hash of commit and current date
-PKG_RELEASE="0.$(date +%04Y%02m%02d%02H%02M).git$(git rev-parse --short HEAD)"
-#PKG_RELEASE="1"
-
 # Set the location of the JDK that will be used for compilation:
 export JAVA_HOME="${JAVA_HOME:=/usr/lib/jvm/java-21}"
 
@@ -65,11 +69,12 @@ tar czf rpmbuild/SOURCES/ovirt-build-dependencies-${PKG_VERSION}.tar.gz reposito
 # Set version and release
 sed \
     -e "s|@VERSION@|${PKG_VERSION}|g" \
-    -e "s|@RELEASE@|${PKG_RELEASE}|g" \
+    -e "s|@PACKAGE_RPM_RELEASE@|${PACKAGE_RPM_RELEASE}|g" \
     < ovirt-build-dependencies.spec.in \
     > ovirt-build-dependencies.spec
 
 # Build source package
 rpmbuild \
-    -D "_topdir rpmbuild" \
+    --define "_topdir $(pwd)/rpmbuild" \
+    --define "release_suffix ${RELEASE_SUFFIX}" \
     -bs ovirt-build-dependencies.spec
